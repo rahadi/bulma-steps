@@ -1,26 +1,27 @@
-import EventEmitter from './events';
-import defaultOptions from './defaultOptions';
+import EventEmitter from "./events";
+import defaultOptions from "./defaultOptions";
 
-const onStepsPrevious = Symbol('onStepsPrevious');
-const onStepsNext = Symbol('onStepsNext');
+const onStepsPrevious = Symbol("onStepsPrevious");
+const onStepsNext = Symbol("onStepsNext");
 
 export default class bulmaSteps extends EventEmitter {
   constructor(selector, options = {}) {
     super();
 
-    this.element = typeof selector === 'string'
-      ? document.querySelector(selector)
-      : selector;
+    this.element =
+      typeof selector === "string"
+        ? document.querySelector(selector)
+        : selector;
     // An invalid selector or non-DOM node has been provided.
     if (!this.element) {
-      throw new Error('An invalid selector or non-DOM node has been provided.');
+      throw new Error("An invalid selector or non-DOM node has been provided.");
     }
 
-    this._clickEvents = ['click'];
+    this._clickEvents = ["click"];
     /// Set default options and merge with instance defined
     this.options = {
       ...defaultOptions,
-      ...options
+      ...options,
     };
 
     this[onStepsPrevious] = this[onStepsPrevious].bind(this);
@@ -34,11 +35,11 @@ export default class bulmaSteps extends EventEmitter {
    * @method
    * @return {Array} Array of all Carousel instances
    */
-  static attach(selector = '.steps', options = {}) {
+  static attach(selector = ".steps", options = {}) {
     let instances = new Array();
 
     const elements = document.querySelectorAll(selector);
-    [].forEach.call(elements, element => {
+    [].forEach.call(elements, (element) => {
       setTimeout(() => {
         instances.push(new bulmaSteps(element, options));
       }, 100);
@@ -52,15 +53,22 @@ export default class bulmaSteps extends EventEmitter {
    * @return {void}
    */
   init() {
-    this._id = 'bulmaSteps' + (new Date()).getTime() + Math.floor(Math.random() * Math.floor(9999));
+    this._id =
+      "bulmaSteps" +
+      new Date().getTime() +
+      Math.floor(Math.random() * Math.floor(9999));
 
     this.steps = this.element.querySelectorAll(this.options.selector);
-    this.contents = this.element.querySelectorAll(this.options.selector_content);
-    this.previous_btn = this.element.querySelector(this.options.previous_selector);
+    this.contents = this.element.querySelectorAll(
+      this.options.selector_content
+    );
+    this.previous_btn = this.element.querySelector(
+      this.options.previous_selector
+    );
     this.next_btn = this.element.querySelector(this.options.next_selector);
 
     [].forEach.call(this.steps, (step, index) => {
-      step.setAttribute('data-step-id', index);
+      step.setAttribute("data-step-id", index);
     });
 
     if (this.steps && this.steps.length) {
@@ -70,7 +78,7 @@ export default class bulmaSteps extends EventEmitter {
 
     this._bindEvents();
 
-    this.emit('bulmasteps:ready', this.element.value);
+    this.emit("bulmasteps:ready", this.element.value);
   }
 
   /**
@@ -80,35 +88,35 @@ export default class bulmaSteps extends EventEmitter {
    */
   _bindEvents() {
     if (this.previous_btn != null) {
-      this._clickEvents.forEach(event => {
+      this._clickEvents.forEach((event) => {
         this.previous_btn.addEventListener(event, this[onStepsPrevious], false);
       });
     }
 
     if (this.next_btn != null) {
-      this._clickEvents.forEach(event => {
+      this._clickEvents.forEach((event) => {
         this.next_btn.addEventListener(event, this[onStepsNext], false);
       });
     }
 
     if (this.options.stepClickable) {
       [].forEach.call(this.steps, (step, index) => {
-        this._clickEvents.forEach(event => {
-          while(index > this.current_id) {
+        this._clickEvents.forEach((event) => {
+          while (index > this.current_id) {
             this[onStepsNext](event);
           }
-          while(index < this.current_id) {
+          while (index < this.current_id) {
             this[onStepsPrevious](event);
           }
         });
-      })
+      });
     }
   }
 
   [onStepsPrevious](e) {
     e.preventDefault();
 
-    if (!e.target.getAttribute('disabled')) {
+    if (!e.target.getAttribute("disabled")) {
       this.previous_step();
     }
   }
@@ -116,7 +124,7 @@ export default class bulmaSteps extends EventEmitter {
   [onStepsNext](e) {
     e.preventDefault();
 
-    if (!e.target.getAttribute('disabled')) {
+    if (!e.target.getAttribute("disabled")) {
       this.next_step();
     }
   }
@@ -126,7 +134,7 @@ export default class bulmaSteps extends EventEmitter {
       var step = this.steps[i];
 
       if (step.classList.contains(this.options.active_class)) {
-        return parseInt(step.getAttribute('data-step-id'));
+        return parseInt(step.getAttribute("data-step-id"));
       }
     }
 
@@ -134,27 +142,27 @@ export default class bulmaSteps extends EventEmitter {
   }
 
   updateActions(step) {
-    var stepId = parseInt(step.getAttribute('data-step-id'));
+    var stepId = parseInt(step.getAttribute("data-step-id"));
     if (stepId == 0) {
       if (this.previous_btn != null) {
-        this.previous_btn.setAttribute('disabled', 'disabled');
+        this.previous_btn.setAttribute("disabled", "disabled");
       }
       if (this.next_btn != null) {
-        this.next_btn.removeAttribute('disabled', 'disabled');
+        this.next_btn.removeAttribute("disabled", "disabled");
       }
-    } else if (stepId == (this.steps.length - 1)) {
+    } else if (stepId == this.steps.length - 1) {
       if (this.previous_btn != null) {
-        this.previous_btn.removeAttribute('disabled', 'disabled');
+        this.previous_btn.removeAttribute("disabled", "disabled");
       }
-      if (this.next_btn != null) {
-        this.next_btn.setAttribute('disabled', 'disabled');
-      }
+      // if (this.next_btn != null) {
+      //   this.next_btn.setAttribute('disabled', 'disabled');
+      // }
     } else {
       if (this.previous_btn != null) {
-        this.previous_btn.removeAttribute('disabled', 'disabled');
+        this.previous_btn.removeAttribute("disabled", "disabled");
       }
       if (this.next_btn != null) {
-        this.next_btn.removeAttribute('disabled', 'disabled');
+        this.next_btn.removeAttribute("disabled", "disabled");
       }
     }
   }
@@ -169,19 +177,27 @@ export default class bulmaSteps extends EventEmitter {
     var next_id = current_id + 1,
       errors = [];
 
-    if (typeof this.options.beforeNext != 'undefined' && this.options.beforeNext != null && this.options.beforeNext) {
+    if (
+      typeof this.options.beforeNext != "undefined" &&
+      this.options.beforeNext != null &&
+      this.options.beforeNext
+    ) {
       errors = await this.options.beforeNext(current_id);
     }
-    this.emit('bulmasteps:before:next', current_id);
+    this.emit("bulmasteps:before:next", current_id);
 
-    if (typeof errors == 'undefined') {
+    if (typeof errors == "undefined") {
       errors = [];
     }
 
     if (errors.length > 0) {
-      this.emit('bulmasteps:errors', errors);
+      this.emit("bulmasteps:errors", errors);
       for (var i = 0; i < errors.length; i++) {
-        if (typeof this.options.onError != 'undefined' && this.options.onError != null && this.options.onError) {
+        if (
+          typeof this.options.onError != "undefined" &&
+          this.options.onError != null &&
+          this.options.onError
+        ) {
           this.options.onError(errors[i]);
         }
       }
@@ -190,10 +206,14 @@ export default class bulmaSteps extends EventEmitter {
     }
 
     if (next_id >= this.steps.length - 1) {
-      if (typeof this.options.onFinish != 'undefined' && this.options.onFinish != null && this.options.onFinish) {
+      if (
+        typeof this.options.onFinish != "undefined" &&
+        this.options.onFinish != null &&
+        this.options.onFinish
+      ) {
         this.options.onFinish(current_id);
       }
-      this.emit('bulmasteps:finish', current_id);
+      this.emit("bulmasteps:finish", current_id);
     }
     if (next_id < this.steps.length) {
       this.complete_step(current_id);
@@ -229,30 +249,34 @@ export default class bulmaSteps extends EventEmitter {
     }
 
     this.steps[step_id].classList.add(this.options.active_class);
-    if (typeof this.contents[step_id] !== 'undefined') {
+    if (typeof this.contents[step_id] !== "undefined") {
       this.contents[step_id].classList.add(this.options.active_class);
     }
 
-    if (typeof this.options.onShow != 'undefined' && this.options.onShow != null && this.options.onShow) {
+    if (
+      typeof this.options.onShow != "undefined" &&
+      this.options.onShow != null &&
+      this.options.onShow
+    ) {
       this.options.onShow(step_id);
     }
 
-    this.emit('bulmasteps:step:show', step_id);
+    this.emit("bulmasteps:step:show", step_id);
   }
 
   complete_step(step_id) {
     this.steps[step_id].classList.add(this.options.completed_class);
-    this.emit('bulmasteps:step:completed', step_id);
+    this.emit("bulmasteps:step:completed", step_id);
   }
 
   uncomplete_step(step_id) {
     this.steps[step_id].classList.remove(this.options.completed_class);
-    this.emit('bulmasteps:step:uncompleted', step_id);
+    this.emit("bulmasteps:step:uncompleted", step_id);
   }
 
   deactivate_step(step_id) {
     this.steps[step_id].classList.remove(this.options.active_class);
-    if (typeof this.contents[step_id] !== 'undefined') {
+    if (typeof this.contents[step_id] !== "undefined") {
       this.contents[step_id].classList.remove(this.options.active_class);
     }
   }
